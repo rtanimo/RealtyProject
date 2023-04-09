@@ -9,7 +9,7 @@ const pool = mysql2.createPool({
     database: process.env.MYSQL_DATABASE
 }).promise();
 
-async function getAllProperty() {
+export async function getAllProperty() {
     const [rows] = await pool.query(`
         SELECT *
         FROM Property;
