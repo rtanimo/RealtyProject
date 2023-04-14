@@ -8,7 +8,7 @@ export default function List() {
     const [property, setProperty] = useState([])
 
     useEffect(() => {
-        axios.get("http://localhost:3001").then((response) => {
+        axios.get("/api/property").then((response) => {
             setProperty(response.data)
         })
     },[])

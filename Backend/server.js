@@ -5,7 +5,7 @@ import cors from 'cors'
 const app = express()
 app.use(cors())
 
-app.get('/', async (req, res) => {
+app.get('/api/property', async (req, res) => {
     const properties = await getAllProperties()
     res.send(properties)
 })

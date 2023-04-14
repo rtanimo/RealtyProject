@@ -1,14 +1,14 @@
 import {React, useState, useEffect} from 'react'
 import axios from 'axios'
 import List from './List'
-import Property from './Property'
+
 
 export default function App() {
 
   const [property, setProperty] = useState([])
 
   useEffect(() => {
-      axios.get("http://localhost:3001").then((response) => {
+      axios.get("http://localhost:3000").then((response) => {
           setProperty(response.data)
       })
   },[])
