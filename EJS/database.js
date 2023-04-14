@@ -18,5 +18,5 @@ export async function getAllProperty() {
     return rows;
 }
 
-const result = await getAllProperty();
-console.log(result);
+// const result = await getAllProperty();
+// console.log(result);
