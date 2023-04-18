@@ -1,30 +1,16 @@
-import {React, useState, useEffect} from 'react'
-import axios from 'axios'
-import List from './List'
-
+import { Routes, Route } from "react-router-dom"
+import Home from './Home'
+import Properties from "./Properties"
+import SaleRecords from "./SaleRecords"
+import Assessments from "./Assessments"
 
 export default function App() {
-
-  const [property, setProperty] = useState([])
-
-  useEffect(() => {
-      axios.get("http://localhost:3000").then((response) => {
-          setProperty(response.data)
-      })
-  },[])
-
-  if (!property) return null;
-  
   return(
-  <div>
-    <h1>Home Page</h1>
-    {/* {property.map((newProperty) => (
-      <Property 
-        key={newProperty.TMK}
-        Asking_Price={newProperty.Asking_Price}
-      />
-    ))} */}
-    <List />
-  </div>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/property" element={<Properties />} />
+      <Route path="/sales-records" element={<SaleRecords />} />
+      <Route path="/assessments" element={<Assessments />} />
+    </Routes>
   )
 }

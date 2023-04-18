@@ -1,5 +1,5 @@
 import express from 'express'
-import {getAllProperties, getAllAssessments} from './database.js'
+import {getAllProperties, getAllAssessments, getAllSalesRecords, getAssessments} from './database.js'
 import cors from 'cors'
 
 const app = express()
@@ -10,10 +10,20 @@ app.get('/api/property', async (req, res) => {
     res.send(properties)
 })
 
-app.get('/assessment', async (req, res) => {
-    const assessments = await getAllAssessments(264950)
+app.get('/api/sales-records', async (req, res) => {
+    const sales = await getAllSalesRecords()
+    res.send(sales)
+})
+
+app.get('/api/assessments', async (req, res) => {
+    const assessments = await getAllAssessments()
     res.send(assessments)
 })
+
+// app.get('/api/assessments', async (req, res) => {
+//     const assessments = await getAssessments(264950)
+//     res.send(assessments)
+// })
 
 
 

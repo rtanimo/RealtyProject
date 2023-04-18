@@ -17,8 +17,22 @@ export async function getAllProperties() {
   return records
 }
 
+// query all sales records
+export async function getAllSalesRecords() {
+  const [records, fields] = await pool.query('SELECT * FROM Sale_Record')
+
+  return records
+}
+
+// query all assessments
+export async function getAllAssessments() {
+  const [records, fields] = await pool.query('SELECT * FROM Assessment')
+
+  return records
+}
+
 // query assessments for a property, returns all assesssements for that property
-export async function getAllAssessments(TMK) {
+export async function getAssessments(TMK) {
   const [records, fields] = await pool.query('SELECT * FROM Assessment WHERE TMK = ?', [TMK])
 
   return records
