@@ -14,7 +14,6 @@ export default function Assessments() {
 
   return (
     <div>
-        <Navbar />
         {assessments.map( (item) => (
             <Assessment 
                 key={item.Report_Num}

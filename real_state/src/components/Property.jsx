@@ -1,17 +1,47 @@
-import React from 'react'
+import Card from 'react-bootstrap/Card';
+
+// export default function Property(props) {
+//   return (
+//     <div>
+//         <h6>{props.street_num} {props.street_name}</h6>
+//         <h6>{props.city}, {props.state} {props.zipcode}</h6>
+//         <ul>
+//             <li>Asking Price: {props.asking_price}</li>
+//             <li>Lava Zone: {props.lava_zone}</li>
+//             <li>District Zone: {props.district_zone}</li>
+//             <li>Realtor: {props.realtor_id}</li>
+//             {props.hoa_fee != null && <li>HOA Fee: {props.hoa_fee}</li>}
+//         </ul>
+//     </div>
+//   )
+// }
 
 export default function Property(props) {
   return (
-    <div>
-        <h6>{props.street_num} {props.street_name}</h6>
-        <h6>{props.city}, {props.state} {props.zipcode}</h6>
-        <ul>
-            <li>Asking Price: {props.asking_price}</li>
-            <li>Lava Zone: {props.lava_zone}</li>
-            <li>District Zone: {props.district_zone}</li>
-            <li>Realtor: {props.realtor_id}</li>
-            {props.hoa_fee != null && <li>HOA Fee: {props.hoa_fee}</li>}
-        </ul>
-    </div>
+    <Card style={{ width: '20rem' }}>
+      <Card.Body>
+        <Card.Title>
+          {props.street_num} {props.street_name}
+        </Card.Title>
+        <Card.Subtitle className="mb-2 text-muted">
+          {props.city}, {props.state} {props.zipcode}
+        </Card.Subtitle>
+        <Card.Text>
+          Asking Price: {props.asking_price}
+        </Card.Text>
+        <Card.Text>
+          Lava Zone: {props.lava_zone}
+        </Card.Text>
+        <Card.Text>
+          District Zone: {props.district_zone}
+        </Card.Text>
+        <Card.Text>
+          Realtor: {props.realtor_id}
+        </Card.Text>
+        {props.hoa_fee != null ? <Card.Text>HOA Fees: {props.hoa_fee}</Card.Text> : <Card.Text>HOA Fees: 0</Card.Text>}
+        <Card.Link href='#assessment' className='text-decoration-none'>Assessments</Card.Link>
+        <Card.Link href='#sale-records' className='text-decoration-none'>Sale Records</Card.Link>
+      </Card.Body>
+    </Card>
   )
 }

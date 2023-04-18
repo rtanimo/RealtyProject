@@ -16,7 +16,8 @@ export default function Properties(props) {
 
     return(
     <div>
-        <Navbar />
+        <div className="container">
+            <div className="row">
         {listOfProperties.map( (item) => (
             <Property 
                 key={item.TMK}
@@ -27,11 +28,13 @@ export default function Properties(props) {
                 zipcode={item.Zipcode}
                 asking_price={item.Asking_Price}
                 lava_zone={item.Lava_Zone}
-                district_num={item.District_Num}
+                district_zone={item.District_Num}
                 realtor_id={item.Realtor_ID}
                 hoa_fee={item.HOA_Fees}
             />
         ))}
+            </div>
+        </div>
     </div>
     )
 }

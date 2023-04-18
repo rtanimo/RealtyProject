@@ -14,7 +14,6 @@ export default function SaleRecords() {
 
   return (
     <div>
-        <Navbar />
         {saleRecords.map( (item) => (
             <SaleRecord 
                 key={item.Transaction_ID}
