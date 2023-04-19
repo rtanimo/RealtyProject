@@ -1,5 +1,4 @@
 import {React, useState, useEffect} from 'react'
-import Navbar from '../components/Navbar'
 import axios from 'axios'
 import Assessment from '../components/Assessment'
 
@@ -14,16 +13,21 @@ export default function Assessments() {
 
   return (
     <div>
-        {assessments.map( (item) => (
-            <Assessment 
-                key={item.Report_Num}
-                tmk={item.TMK}
-                year={item.Year}
-                assessed_value={item.Assessed_Value}
-                market_value={item.Market_Value}
-                estimated_property_tax={item.Estimated_Property_Tax}
-            />
-        ))}
+        <div className="container">
+        <h1 className='text-center pb-4'>Assessments For All Properties</h1>
+            <div className="row">
+                {assessments.map( (item) => (
+                    <Assessment 
+                        key={item.Report_Num}
+                        tmk={item.TMK}
+                        year={item.Year}
+                        assessed_value={item.Assessed_Value}
+                        market_value={item.Market_Value}
+                        estimated_property_tax={item.Estimated_Property_Tax}
+                    />
+                ))}
+            </div>
+        </div>
     </div>
   )
 }

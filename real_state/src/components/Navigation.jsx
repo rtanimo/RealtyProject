@@ -11,7 +11,7 @@ export default function Navigation() {
                     <Nav.Link href='/property'>Properties</Nav.Link>
                     <Nav.Link href='/assessments'>Assessments</Nav.Link>
                     <Nav.Link href='/sales-records'>Sale Records</Nav.Link>
-                    <Nav.Link href='#/realtors'>Realtors</Nav.Link>
+                    <Nav.Link href='/realtors'>Realtors</Nav.Link>
                     <Nav.Link href='#/property/sell'>Sell Property</Nav.Link>
                     <Nav.Link href='#/property/search'>Search Properties</Nav.Link>
                 </Nav>

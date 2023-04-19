@@ -31,6 +31,13 @@ export async function getAllAssessments() {
   return records
 }
 
+// query all realtors
+export async function getAllRealtors() {
+  const [records, fields] = await pool.query('SELECT * FROM Realtor')
+
+  return records
+}
+
 // query assessments for a property, returns all assesssements for that property
 export async function getAssessments(TMK) {
   const [records, fields] = await pool.query('SELECT * FROM Assessment WHERE TMK = ?', [TMK])
@@ -38,6 +45,4 @@ export async function getAssessments(TMK) {
   return records
 }
 
-// const res = await getAllProperties();
-// console.log(res);
 

@@ -9,6 +9,7 @@ export default function Navbar() {
         <li><Link to= "/property">Properties</Link></li>
         <li><Link to="/sales-records">Sale Records</Link></li>
         <li><Link to="/assessments">Assessments</Link></li>
+        <li><Link to="/realtors">Realtor</Link></li>
       </ul>
     </div>
   )
