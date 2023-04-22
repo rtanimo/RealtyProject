@@ -1,6 +1,12 @@
 import Card from 'react-bootstrap/Card'
+import Button from 'react-bootstrap/Button'
 
 export default function Realtor(props) {
+
+    // Still need to finish mailto:?
+    function handleOnClick() {
+        window.alert("Email")
+    }
   return (
     <Card style={{width: "20rem"}}>
         <Card.Body>
@@ -13,6 +19,7 @@ export default function Realtor(props) {
             <Card.Text>
                 Phone Number: {props.phone_number}
             </Card.Text>
+            <Button variant='primary' onClick={handleOnClick}>Contact</Button>
         </Card.Body>
     </Card>
   )

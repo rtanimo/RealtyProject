@@ -19,6 +19,7 @@ export default function Properties(props) {
                 <div className="row">
                     {listOfProperties.map( (item) => (
                         <Property 
+                            tmk={item.TMK}
                             key={item.TMK}
                             street_num={item.Street_Num}
                             street_name={item.Street_Name}
