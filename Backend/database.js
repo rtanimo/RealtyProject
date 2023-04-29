@@ -46,3 +46,16 @@ export async function getAssessments(TMK) {
 }
 
 
+// query all tables for search side bar
+export async function searchBar() {
+  
+  const [records] = await pool.query(`
+    SELECT p.*, h.*, c.*, e.*, s.*, a.*
+    FROM Property p
+    LEFT JOIN ON Property
+    LEFT JOIN ON House h  
+    LEFT JOIN ON Condo c 
+    LEFT JOIN ON Empty_Lot e 
+    WHERE 1=1;
+    `)
+}
