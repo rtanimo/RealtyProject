@@ -31,6 +31,8 @@ export default function Properties(props) {
                             district_zone={item.District_Num}
                             realtor_id={item.Realtor_ID}
                             hoa_fee={item.HOA_Fees}
+                            acres={item.Acreage}
+                            sq_ft={item.Square_Footage}
                         />
                     ))}
                 </div>

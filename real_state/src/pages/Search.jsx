@@ -1,47 +1,88 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Form from 'react-bootstrap/Form'
-import Properties from './Properties'
+import axios from 'axios'
+import Property from '../components/Property'
 
-export default function Search () {
+export default function Search(){
 
-    const [price, setPrice] = useState(500000);
+
     const [numBedroom, setNumBedroom] = useState(0);
-    const [text, setText] = useState("");
+    const [propertyType, setPropertyType] = useState("");
+    const [resultList, setResultList] = useState([]);
+    const [minPrice, setMinPrice] = useState(null)
+    const [maxPrice, setMaxPrice] = useState(null)
+    // const [numBed, setNumBed] = useState()
+    // const [numBath, setNumBath] = useState()
 
+    useEffect( () => {
+        getMinMaxPrice()
+        queryDB(propertyType)
+    },[])
 
     function handleSelectChange(event) {
         setNumBedroom(event.target.value)
     }
 
-    function handleOnChange(event) {
-        setText(event.target.value)
+    function handleMinPriceChange(event) {
+        setMinPrice(event.target.value)
     }
 
-    function handlePriceChange(event) {
-        setPrice(event.target.value)
+    function handleMaxPriceChange(event) {
+        setMaxPrice(event.target.value)
+    }
+    function handlePropertySelect(event) {
+        setPropertyType(event.target.value)
+        queryDB(event.target.value)     
+    }
+
+    function getMinMaxPrice() {
+        axios.get("/api/price/min/max")
+        .then((response) => {
+            let [{min_price, max_price}] = response.data
+            setMinPrice(min_price)
+            setMaxPrice(max_price)
+        })
+    }
+
+    function queryDB(propertyType) {
+        axios.post("/api/search", {
+            propertyType: propertyType 
+        }).then((response) => {
+            setResultList(response.data)
+            console.log(response.data)
+        })
+
     }
 
     return (
         <div className='container'>
             <div className="row">
-                <div className='col-3 border border-secondary' >
+                <div className='col-3' >
 
                     <Form>
                         <Form.Group className='pt-2 pb-4'>
                             <Form.Label>
                                 <strong>Property Type</strong>
                             </Form.Label>
-                            <Form.Check type='checkbox' label='House' />
-                            <Form.Check type='checkbox' label='Condominium' />
-                            <Form.Check type='checkbox' label='Emtpy Lot' />
+                            <Form.Select onChange={handlePropertySelect} value={propertyType}>
+                                <option value="all">All</option>
+                                <option value="house">House</option>
+                                <option value="condo">Condominium</option>
+                                <option value="empty_lot">Empty Lot</option>
+                            </Form.Select>
                         </Form.Group>
 
                         <Form.Group>
+                            <strong>Price</strong>
+                            <br />
                             <Form.Label>
-                                <strong>Price</strong>
+                                Min
                             </Form.Label>
-                            <Form.Control onChange={handlePriceChange} value={price} />
-                            <Form.Range onChange={handlePriceChange} min={150000} max={1000000} value={price} />
+                            <Form.Control onChange={handleMinPriceChange} value={minPrice} />
+                            <Form.Label>
+                                Max
+                            </Form.Label>
+                            <Form.Control onChange={handleMaxPriceChange} value={maxPrice} />
                             
                         </Form.Group>
 
@@ -106,8 +147,30 @@ export default function Search () {
                     </Form>
                 </div>
 
-                <div className="col-9 border boarder-primary">
-                    Search Results (Properties) go here
+                <div className="col-9">
+                    <div className="row">
+                        {resultList.map( (item) => (
+                            <Property 
+                                tmk={item.TMK}
+                                key={item.TMK}
+                                street_num={item.Street_Num}
+                                street_name={item.Street_Name}
+                                city={item.City}
+                                state={item.State}
+                                zipcode={item.Zipcode}
+                                asking_price={item.Asking_Price}
+                                lava_zone={item.Lava_Zone}
+                                district_zone={item.District_Num}
+                                realtor_id={item.Realtor_ID}
+                                hoa_fee={item.HOA_Fees}
+                                num_bed={item.Num_Bedroom}
+                                num_bath={item.Num_Bathroom}
+                                acres={item.Acreage}
+                                sq_ft={item.Square_Footage}
+                                d_num={item.District_Num}
+                            />
+                        ))}
+                    </div>
                 </div>
                      
             </div>

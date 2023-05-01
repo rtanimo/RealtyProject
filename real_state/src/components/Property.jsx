@@ -1,20 +1,80 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import Card from 'react-bootstrap/Card'
-import PropertyOffCanvas from './PropertyOffCanvas'
-import Button from 'react-bootstrap/esm/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas'
+import axios from 'axios'
+import Table from 'react-bootstrap/Table';
+
 
 export default function Property(props) {
   const [show, setShow] = useState(false);
+  const [taxMapKey, setTaxMapKey] = useState(props.tmk)
+  const [saleRecords, setSaleRecords] = useState([])
+  const [assessments, setAssessments] = useState([])
+  const [taxRecords, setTaxRecords] = useState([])
+  const [nearbySchools, setNearbySchools] = useState([])
+  const [districtNum, setDistrictNum] = useState(props.district_zone)
+  const [districtName, setDistrictName] = useState([])
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+  useEffect(() => {
+    setTaxMapKey(props.tmk)
+  }, [])
 
-  function handleOnClick() {
-    window.alert("Show Property Info")
+  useEffect(() => {
+    setDistrictNum(props.district_zone)
+  },[])
+
+  const handleClose = () => {
+    setShow(false);
+  } 
+  const handleShow = () => {
+    setShow(true)
+    querySaleRecords(taxMapKey)
+    queryAssessments(taxMapKey)
+    queryTaxRecords(taxMapKey)
+    queryNearybySchools(districtNum)
+    queryDistrictName(districtNum)
+  };
+
+  function querySaleRecords(taxMapKey) {
+    axios.post("/api/search/sale-records", {
+        taxMapKey: taxMapKey 
+    }).then((response) => {
+        setSaleRecords(response.data)
+    })
   }
-    
 
+  function queryAssessments(taxMapKey) {
+    axios.post("/api/search/assessments", {
+      taxMapKey: taxMapKey
+    }).then((response) => {
+      setAssessments(response.data)
+    })
+  }
+
+  function queryTaxRecords(taxMapKey) {
+    axios.post("/api/search/tax-records", {
+      taxMapKey: taxMapKey
+    }).then((response) => {
+      setTaxRecords(response.data)
+    })
+  }
+
+  function queryNearybySchools(districtNum) {
+    axios.post("/api/search/nearby-schools", {
+      districtNum: districtNum
+    }).then((response) => {
+      setNearbySchools(response.data)
+      console.log(response.data)
+    })
+  }
+
+  function queryDistrictName(districtNum) {
+    axios.post("/api/search/district-name", {
+      districtNum: districtNum
+    }).then((response) => {
+      setDistrictName(response.data)
+    })
+  }
 
   return (
     <Card style={{ width: '20rem' }}>
@@ -28,30 +88,133 @@ export default function Property(props) {
         <Card.Text>
           Asking Price: {props.asking_price}
         </Card.Text>
-        {/* <Card.Text>
-          Lava Zone: {props.lava_zone}
-        </Card.Text>
-        <Card.Text>
-          District Zone: {props.district_zone}
-        </Card.Text>
-        <Card.Text>
-          Realtor: {props.realtor_id}
-        </Card.Text>  */}
-        {/* {props.hoa_fee != null ? <Card.Text>HOA Fees: {props.hoa_fee}</Card.Text> : <Card.Text>HOA Fees: 0</Card.Text>} */}
-        {/* <Card.Link href='#assessment' className='text-decoration-none' onClick={handleOnClick}>Assessments</Card.Link>
-        <Card.Link href='#sale-records' className='text-decoration-none'>Sale Records</Card.Link> */}
-        {/* <Card.Link href='#property/info' className='text-decoration-none' onClick={handleOnClick}>More Info
-        </Card.Link>  */}
   
-        <Card.Link href='#property/info' className='text-decoration-none' onClick={handleShow}>
-          More Info2
+        <Card.Link className='text-decoration-none' onClick={handleShow}>
+          More Info
         </Card.Link> 
         <Offcanvas show={show} onHide={handleClose} placement='end'>
           <Offcanvas.Header closeButton>
             <Offcanvas.Title>Tax Map Key: {props.tmk}</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
-            things go here
+            <div className="pt-2 pb-1">
+            {props.street_num} {props.street_name} <br/>
+            {props.city}, {props.state} {props.zipcode} <br/>
+            </div>
+            <div className="pt-1 pb-1">
+            Asking Price: {props.asking_price}
+            </div>
+            {props.hoa_fee != null &&
+            <div className='pt-1 pb-1'>
+              HOA Fees: {props.hoa_fee}
+              </div>}
+            {props.num_bed != null &&
+            <div className="pt-1 pb-1">
+            Bedrooms: {props.num_bed} <br/>
+            Bathrooms: {props.num_bath}
+            </div>}
+            <div className="pt-1 pb-1">
+            {props.acres != null && <>Acreage: {props.acres}<br/></>}
+            {props.sq_ft != null && <>Square Footage: {props.sq_ft}</>}
+            </div>
+            <div className="pt-1 pb-1">
+              District Name: {districtName.map(name => <>{name.Zone_Name}</>)}
+            <br/>
+            Lava Zone: {props.lava_zone}
+            </div>
+            <div className="pt-1 pb-1">
+            Realtor: {props.realtor_id}
+            </div>
+
+            <div className="pt-1, pb-1">
+              Sale Record:  
+              <Table className="pt-5" striped bordered hovered="sm">
+                <thead>
+                  <tr>
+                    <th>Year</th>
+                    <th>Sold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {saleRecords.map((record) => (
+                    props.tmk === record.TMK &&
+                      <tr key={record.Transaction_ID}>
+                        <td>{record.Year}</td>
+                        <td>${record.Sale_Price}</td>
+                      </tr>
+                  ))}
+                </tbody>
+
+              </Table>
+            </div>
+
+            <div className="pt-1, pb-1">
+              Assessments:  
+              <Table className="pt-5" striped bordered hovered="sm">
+                <thead>
+                  <tr>
+                    <th>Year</th>
+                    <th>Assessed</th>
+                    <th>Market</th>
+                    <th>Property Tax</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {assessments.map((item) => (
+                    props.tmk === item.TMK &&
+                      <tr key={item.Report_Num}>
+                        <td>{item.Year}</td>
+                        <td>${item.Assessed_Value}</td>
+                        <td>${item.Market_Value}</td>
+                        <td>${item.Estimated_Property_Tax}</td>
+                      </tr>
+                  ))}
+                </tbody>
+
+              </Table>
+            </div>
+
+            <div className="pt-1, pb-1">
+              Tax History:  
+              <Table className="pt-5" striped bordered hovered="sm">
+                <thead>
+                  <tr>
+                    <th>Year</th>
+                    <th>Total Taxable Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {taxRecords.map((item) => (
+                    props.tmk === item.TMK &&
+                      <tr key={item.Record_ID}>
+                        <td>{item.Year}</td>
+                        <td>${item.Total_Taxable_Value}</td>
+                      </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+            
+            <div className="pt-1, pb-1">
+              Nearby Schools:  
+              <Table className="pt-5" striped bordered hovered="sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Grades Offered</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {nearbySchools.map((school) => (
+                      <tr key={school.School_Code}>
+                        <td>{school.School_Name}</td>
+                        <td>{school.Grade_Level}</td>
+                      </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+
           </Offcanvas.Body>
         </Offcanvas>
 
