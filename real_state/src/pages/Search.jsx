@@ -38,6 +38,7 @@ export default function Search(){
             lavaZone: lavaZone
         }).then((response) => {
             setResultList(response.data)
+            console.log(response.data)
         })
     }
 
@@ -150,8 +151,12 @@ export default function Search(){
                     </Form>
                 </div>
 
+                
+
                 <div className="col-9">
+                {resultList.length !== 0 ? 
                     <div className="row">
+                    
                         {resultList.map( (item) => (
                             <Property 
                                 tmk={item.TMK}
@@ -166,15 +171,25 @@ export default function Search(){
                                 district_zone={item.District_Num}
                                 realtor_id={item.Realtor_ID}
                                 hoa_fee={item.HOA_Fees}
-                                num_bed={item.Num_Bedroom}
-                                num_bath={item.Num_Bathroom}
+                                houseBed={item.houseBed}
+                                houseBath={item.houseBath}
+                                condoBath={item.condoBath}
+                                condoBed={item.condoBed}
                                 acres={item.Acreage}
                                 sq_ft={item.Square_Footage}
                                 d_num={item.District_Num}
-                            />
+                            /> 
                         ))}
+                    </div> 
+                    : 
+                    <div className="jumbotron jumbotron-fluid">
+                    <div className="container">
+                      <h1 className="display-4">No Results</h1>
+                      <p className="lead">Please try your search again or contact Ethan Sick.</p>
                     </div>
-                </div>
+                  </div>}
+                </div> 
+
                      
             </div>
             

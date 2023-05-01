@@ -7,13 +7,10 @@ export default function Navigation() {
         <Navbar expand='lg'>
             <Container>
                 <Nav className='me-auto fs-2' >
-                    <Nav.Link href='/'>Home</Nav.Link>
-                    <Nav.Link href='/property'>Properties</Nav.Link>
-                    <Nav.Link href='/assessments'>Assessments</Nav.Link>
-                    <Nav.Link href='/sales-records'>Sale Records</Nav.Link>
+                    <Nav.Link href='/'>About</Nav.Link>
+                    <Nav.Link href='/sell'>Sell</Nav.Link>
+                    <Nav.Link href='/search'>Buy</Nav.Link>
                     <Nav.Link href='/realtors'>Realtors</Nav.Link>
-                    <Nav.Link href='#/property/sell'>Sell Property</Nav.Link>
-                    <Nav.Link href='/search'>Search Properties</Nav.Link>
                 </Nav>
             </Container>
         </Navbar>

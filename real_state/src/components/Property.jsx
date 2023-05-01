@@ -15,6 +15,7 @@ export default function Property(props) {
   const [districtNum, setDistrictNum] = useState(props.district_zone)
   const [districtName, setDistrictName] = useState([])
 
+
   useEffect(() => {
     setTaxMapKey(props.tmk)
   }, [])
@@ -22,6 +23,7 @@ export default function Property(props) {
   useEffect(() => {
     setDistrictNum(props.district_zone)
   },[])
+
 
   const handleClose = () => {
     setShow(false);
@@ -64,7 +66,6 @@ export default function Property(props) {
       districtNum: districtNum
     }).then((response) => {
       setNearbySchools(response.data)
-      console.log(response.data)
     })
   }
 
@@ -102,32 +103,33 @@ export default function Property(props) {
             {props.city}, {props.state} {props.zipcode} <br/>
             </div>
             <div className="pt-1 pb-1">
-            Asking Price: {props.asking_price}
+            <strong>Asking Price:</strong> ${props.asking_price}
             </div>
             {props.hoa_fee != null &&
             <div className='pt-1 pb-1'>
-              HOA Fees: {props.hoa_fee}
+              <strong>HOA Fees:</strong> ${props.hoa_fee}
               </div>}
-            {props.num_bed != null &&
             <div className="pt-1 pb-1">
-            Bedrooms: {props.num_bed} <br/>
-            Bathrooms: {props.num_bath}
-            </div>}
+              {props.houseBed != null && <><strong>Bedrooms:</strong> {props.houseBed}<br/></>}
+              {props.houseBath != null && <><strong>Bathrooms:</strong> {props.houseBath}</>}
+              {props.condoBed != null && <><strong>Bedrooms:</strong> {props.condoBed}<br/></>}
+              {props.condoBath != null && <><strong>Bathrooms:</strong> {props.condoBath}</>}
+            </div>
             <div className="pt-1 pb-1">
             {props.acres != null && <>Acreage: {props.acres}<br/></>}
             {props.sq_ft != null && <>Square Footage: {props.sq_ft}</>}
             </div>
             <div className="pt-1 pb-1">
-              District Name: {districtName.map(name => <>{name.Zone_Name}</>)}
+              <strong>District Name:</strong> {districtName.map(name => <>{name.Zone_Name}</>)}
             <br/>
-            Lava Zone: {props.lava_zone}
+            <strong>Lava Zone:</strong> {props.lava_zone}
             </div>
             <div className="pt-1 pb-1">
-            Realtor: {props.realtor_id}
+            <strong>Realtor:</strong> {props.realtor_id}
             </div>
 
             <div className="pt-1, pb-1">
-              Sale Record:  
+              <strong>Sale Record:</strong>  
               <Table className="pt-5" striped bordered hovered="sm">
                 <thead>
                   <tr>
@@ -149,7 +151,7 @@ export default function Property(props) {
             </div>
 
             <div className="pt-1, pb-1">
-              Assessments:  
+              <strong>Assessments:</strong>  
               <Table className="pt-5" striped bordered hovered="sm">
                 <thead>
                   <tr>
@@ -175,7 +177,7 @@ export default function Property(props) {
             </div>
 
             <div className="pt-1, pb-1">
-              Tax History:  
+              <strong>Tax History:</strong>  
               <Table className="pt-5" striped bordered hovered="sm">
                 <thead>
                   <tr>
@@ -196,7 +198,7 @@ export default function Property(props) {
             </div>
             
             <div className="pt-1, pb-1">
-              Nearby Schools:  
+              <strong>Nearby Schools:</strong>  
               <Table className="pt-5" striped bordered hovered="sm">
                 <thead>
                   <tr>

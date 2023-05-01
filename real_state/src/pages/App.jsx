@@ -6,6 +6,7 @@ import Assessments from "./Assessments"
 import Navigation from "../components/Navigation"
 import Realtors from "./Realtors"
 import Search from "./Search"
+import SellProperty from "./SellProperty"
 
 export default function App() {
   return(
@@ -13,11 +14,9 @@ export default function App() {
     <Navigation />
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/property" element={<Properties />} />
-      <Route path="/sales-records" element={<SaleRecords />} />
-      <Route path="/assessments" element={<Assessments />} />
       <Route path="/realtors" element={<Realtors />} />
       <Route path="/search" element={<Search />} />
+      <Route path="/sell" element={<SellProperty />} />
     </Routes>
     </>
   )

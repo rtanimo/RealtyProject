@@ -9,7 +9,12 @@ import {getAllProperties,
         getNearbySchools,
         getDistrictName,
         getMinMaxPrice,
-        queryDatabase
+        queryDatabase,
+        getRealtorName,
+        insertIntoProperty,
+        insertIntoHouse,
+        insertIntoCondo,
+        insertIntoEmptyLot
         } from './database.js'
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -97,6 +102,48 @@ app.post("/api/search/district-name", async (req, res) => {
     const district_zone = req.body.districtNum
     const records = await getDistrictName(district_zone)
     res.send(records)
+})
+
+app.post("/api/sell", async (req, res) => {
+    let realtor_id = req.body.realtorID
+    let TMK = req.body.TMK
+    let asking_price = req.body.askingPrice
+    let hoa_fee = req.body.HOA
+    let lava_zone = req.body.lavaZone
+    let district_zone = req.body.districtZone
+    let street_num = req.body.streetNumber
+    let street_name = String(req.body.streetName)
+    let city = req.body.city
+    let state = req.body.state
+    let zipcode = req.body.zip
+    let propertyType = req.body.propertyType
+    let num_bedrooms = req.body.bedrooms
+    let num_bathrooms = req.body.bathrooms
+    let acreage = req.body.acreage
+    let square_footage = req.body.sqFootage
+    let apt_num = req.body.aptNum
+    console.log(realtor_id, TMK, asking_price, hoa_fee, lava_zone, district_zone, street_num, street_name, city, state, zipcode, propertyType, num_bedrooms, num_bathrooms, acreage, square_footage, apt_num)
+
+    if (propertyType === "house") {
+        insertIntoHouse(TMK, num_bedrooms, num_bathrooms, acreage, square_footage)
+        insertIntoProperty(TMK, asking_price, hoa_fee, lava_zone, district_zone, street_num, street_name, city, state, zipcode, realtor_id)
+    }
+
+    if (propertyType === "condo") {
+        insertIntoCondo(TMK, num_bedrooms, num_bathrooms, square_footage, apt_num)
+        insertIntoProperty(TMK, asking_price, hoa_fee, lava_zone, district_zone, street_num, street_name, city, state, zipcode, realtor_id)
+    }
+
+    if (propertyType === "empty_lot") {
+        insertIntoEmptyLot(TMK, acreage)
+        insertIntoProperty(TMK, asking_price, hoa_fee, lava_zone, district_zone, street_num, street_name, city, state, zipcode, realtor_id)
+    }
+
+    
+
+    res.send("completed")
+
+
 })
 
 app.listen(3001, () => {

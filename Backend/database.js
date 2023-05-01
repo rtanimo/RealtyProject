@@ -82,6 +82,12 @@ export async function getMinMaxPrice() {
   return records
 }
 
+export async function getRealtorName(realtorId) {
+  const [records] = await pool.query(`SELECT * FROM Realtor WHERE Agent_Num = ?`, [realtorId])
+
+  return records
+}
+
 
 // query all tables for search side bar
 export async function searchBar(propertyType) {
@@ -126,73 +132,69 @@ export async function searchBar(propertyType) {
 
 export async function queryDatabase(propertyType, minPrice, maxPrice, numBed, numBath, districtNum, lavaZone) {
 
-    // Construct the basic SQL query to select all properties and join on the appropriate table
-    let queryString = `
-    SELECT p.*
-    FROM property AS p 
+
+  // Construct the basic SQL query to select all properties and join on the appropriate table
+  let selectString = `
+    SELECT DISTINCT p.*
   `;
+  let fromString = ` FROM property AS p `
+  let joinString = ``
 
   if (propertyType === 'house') {
-    queryString += 'LEFT JOIN house AS h ON p.TMK = h.TMK ';
+    selectString += `, h.num_bedroom as houseBed, h.num_bathroom as houseBath `
+    joinString += 'LEFT JOIN house AS h ON p.TMK = h.TMK ';
   } else if (propertyType === 'condo') {
-    queryString += 'LEFT JOIN condo AS c ON p.TMK = c.TMK ';
+    selectString += `, c.num_bathroom as condoBath, c.num_bedroom as condoBed `
+    joinString += 'LEFT JOIN condo AS c ON p.TMK = c.TMK ';
   } else if (propertyType === 'empty_lot') {
-    queryString += 'LEFT JOIN empty_lot AS e ON p.TMK = e.TMK ';
+    selectString += `, el.acreage as elAcreage `
+    joinString += 'LEFT JOIN empty_lot AS el ON p.TMK = el.TMK ';
   } else {
     // if propertyType is not specified or is "all", join all tables
-    queryString += 'LEFT JOIN house AS h ON p.TMK = h.TMK '
-    queryString += 'LEFT JOIN condo AS c ON p.TMK = c.TMK '
-    queryString += 'LEFT JOIN empty_lot AS e ON p.TMK = e.TMK ';
+    selectString += `, h.num_bedroom as houseBed, h.num_bathroom as houseBath, c.num_bedroom as condoBed, c.num_bathroom as condoBath, el.acreage as elAcreage `
+    joinString += 'LEFT JOIN house AS h ON p.TMK = h.TMK '
+    joinString += 'LEFT JOIN condo AS c ON p.TMK = c.TMK '
+    joinString += 'LEFT JOIN empty_lot AS el ON p.TMK = el.TMK ';
   }
 
   // Add conditions to the WHERE clause based on the user's search criteria
-  queryString += `
+  let whereString = `
     WHERE p.asking_price >= ${minPrice} AND p.asking_price <= ${maxPrice}
   `;
 
-  if (districtNum != "Any" && districtNum > 0) {
-    queryString += `
+  if (districtNum !== "Any" && districtNum > 0) {
+    whereString += `
       AND p.district_num = ${districtNum}
     `
   }
 
-  if (lavaZone) {
-    queryString += `
+  if (lavaZone !== 0 && lavaZone !== "Any") {
+    whereString += `
       AND p.lava_zone = ${lavaZone}
     `
   }
 
-  if (numBed && numBed != 0) {
+  if (numBed !== "Any" && numBed !== 0 && propertyType !== "empty_lot") {
     if (propertyType === "house") {
-      queryString += ` AND h.num_bedroom = ${numBed}`;
+      whereString += ` AND h.num_bedroom = ${numBed} `;
     } else if (propertyType === "condo") {
-      queryString += ` AND c.num_bedroom = ${numBed}`;
+      whereString += ` AND c.num_bedroom = ${numBed} `;
     } else {
-      queryString += ` AND (h.num_bedroom = ${numBed} OR c.num_bedroom  = ${numBed})`
+      whereString += ` AND (h.num_bedroom = ${numBed} OR c.num_bedroom  = ${numBed}) `
     }
   }
     
-  if (numBath != "Any" && numBath != 0) {
+  if (numBath !== "Any" && numBath !== 0 && propertyType !== "empty_lot") {
     if (propertyType === "house") {
-      queryString += ` AND h.num_bathroom = ${numBath}`;
+      whereString += ` AND h.num_bathroom = ${numBath} `;
     } else if (propertyType === "condo") {
-      queryString += ` AND c.num_bathroom = ${numBath}`;
+      whereString += ` AND c.num_bathroom = ${numBath} `;
     } else {
-      queryString += ` AND (h.num_bathroom = ${numBath} OR c.num_bathroom  = ${numBath})`
+      whereString += ` AND (h.num_bathroom = ${numBath} OR c.num_bathroom  = ${numBath}) `
     }
   }
 
-
-  // const queryString = `
-  //   SELECT p.*, h.num_bedroom, h.num_bathroom, h.square_footage, h.acreage, c.num_bedroom, c.num_bathroom, c.square_footage, c.apt_num, el.acreage
-  //   FROM property AS p
-  //   LEFT JOIN empty_lot AS el ON p.tmk = el.tmk
-  //   LEFT JOIN condo AS c ON p.tmk = c.tmk
-  //   LEFT JOIN house AS h ON p.tmk = h.tmk
-  //   WHERE
-  //   ${numBed ? `AND (c.num_bedroom = ${numBed} OR h.num_bedroom = ${numBed})` : ''}
-  //   ${numBath ? `AND (c.num_bathroom = ${numBath} OR h.num_bathroom = ${numBath})` : ''}
-  // `;
+  let queryString = selectString + fromString + joinString + whereString
 
   const [records] = await pool.query(queryString)
   console.log("Query STring: " + queryString)
@@ -200,12 +202,32 @@ export async function queryDatabase(propertyType, minPrice, maxPrice, numBed, nu
   return records
 }
 
-// let [{min_price, max_price}] = await getMinMaxPrice()
-// // let [min, max] = records
-// // console.log(records.min_price)
-// // console.log(max)
-// console.log(min_price)
-// console.log(max_price)
+export async function insertIntoProperty(TMK, asking_price, hoa_fee, lava_zone, district_zone, street_num, street_name, city, state, zipcode, realtor_id) {
+  let insertStatement = `INSERT INTO Property(TMK, Asking_Price, Lava_Zone, HOA_Fees, Zipcode, City, State, Street_Num, Street_Name, Realtor_ID, District_Num)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-// let res = await queryDatabase("house", 0, 369000, 2, 2, 1, 3)
-// console.log(res)
+  pool.query(insertStatement, [TMK, asking_price, lava_zone, hoa_fee, zipcode, city, state, street_num, street_name, realtor_id, district_zone])
+}
+
+export async function insertIntoHouse(TMK, num_bedrooms, num_bathrooms, acreage, square_footage) {
+  let insertStatement = `INSERT INTO House(TMK,Num_Bedroom,Num_Bathroom,Acreage,Square_Footage)
+  VALUES (${TMK}, ${num_bedrooms}, ${num_bathrooms}, ${acreage}, ${square_footage})`
+
+  pool.query(insertStatement)
+}
+
+export async function insertIntoCondo(TMK, num_bedrooms, num_bathrooms, square_footage, apt_num) {
+  let inserStatement = `INSERT INTO Condo(TMK,Num_Bedroom,Num_Bathroom,Square_Footage, Apt_Num)
+  VALUES (${TMK}, ${num_bedrooms}, ${num_bathrooms}, ${square_footage}, ${apt_num})`
+
+  pool.query(inserStatement)
+}
+
+export async function insertIntoEmptyLot(TMK, acreage) {
+  let inserStatement = `INSERT INTO Empty_Lot(TMK,Acreage)
+  VALUES (${TMK}, ${acreage})`
+
+  pool.query(inserStatement)
+
+}
+
