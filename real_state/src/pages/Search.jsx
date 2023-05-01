@@ -2,56 +2,51 @@ import React, { useState, useEffect } from 'react'
 import Form from 'react-bootstrap/Form'
 import axios from 'axios'
 import Property from '../components/Property'
+import Button from 'react-bootstrap/Button';
 
 export default function Search(){
 
-
-    const [numBedroom, setNumBedroom] = useState(0);
-    const [propertyType, setPropertyType] = useState("");
+    const [propertyType, setPropertyType] = useState("all");
     const [resultList, setResultList] = useState([]);
-    const [minPrice, setMinPrice] = useState(null)
-    const [maxPrice, setMaxPrice] = useState(null)
-    // const [numBed, setNumBed] = useState()
-    // const [numBath, setNumBath] = useState()
+    const [minPrice, setMinPrice] = useState(0)
+    const [maxPrice, setMaxPrice] = useState(0)
+    const [numBed, setNumBed] = useState(0)
+    const [numBath, setNumBath] = useState(0)
+    const [districtNum, setDistrictNum] = useState(0)
+    const [lavaZone, setLavaZone] = useState(0)
 
     useEffect( () => {
-        getMinMaxPrice()
-        queryDB(propertyType)
-    },[])
-
-    function handleSelectChange(event) {
-        setNumBedroom(event.target.value)
-    }
-
-    function handleMinPriceChange(event) {
-        setMinPrice(event.target.value)
-    }
-
-    function handleMaxPriceChange(event) {
-        setMaxPrice(event.target.value)
-    }
-    function handlePropertySelect(event) {
-        setPropertyType(event.target.value)
-        queryDB(event.target.value)     
-    }
-
-    function getMinMaxPrice() {
         axios.get("/api/price/min/max")
         .then((response) => {
-            let [{min_price, max_price}] = response.data
-            setMinPrice(min_price)
-            setMaxPrice(max_price)
+            setMinPrice(response.data[0].min_price)
+            setMaxPrice(response.data[0].max_price)
+        })
+        queryDB(propertyType)
+        
+    },[])
+
+    function handleOnSubmit(event) {
+        event.preventDefault()
+        const postData = {propertyType, minPrice, maxPrice, numBed, numBath, districtNum, lavaZone}
+        axios.post("/api/search/querydatabase", {
+            propertyType: propertyType,
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            numBed: numBed,
+            numBath: numBath,
+            districtNum: districtNum,
+            lavaZone: lavaZone
+        }).then((response) => {
+            setResultList(response.data)
         })
     }
 
     function queryDB(propertyType) {
         axios.post("/api/search", {
-            propertyType: propertyType 
+            propertyType: propertyType,
         }).then((response) => {
             setResultList(response.data)
-            console.log(response.data)
         })
-
     }
 
     return (
@@ -59,12 +54,12 @@ export default function Search(){
             <div className="row">
                 <div className='col-3' >
 
-                    <Form>
+                    <Form onSubmit={handleOnSubmit}>
                         <Form.Group className='pt-2 pb-4'>
                             <Form.Label>
                                 <strong>Property Type</strong>
                             </Form.Label>
-                            <Form.Select onChange={handlePropertySelect} value={propertyType}>
+                            <Form.Select onChange={(e) => setPropertyType(e.target.value)} value={propertyType}>
                                 <option value="all">All</option>
                                 <option value="house">House</option>
                                 <option value="condo">Condominium</option>
@@ -78,11 +73,11 @@ export default function Search(){
                             <Form.Label>
                                 Min
                             </Form.Label>
-                            <Form.Control onChange={handleMinPriceChange} value={minPrice} />
+                            <Form.Control onChange={(e) => setMinPrice(e.target.value)} value={minPrice} />
                             <Form.Label>
                                 Max
                             </Form.Label>
-                            <Form.Control onChange={handleMaxPriceChange} value={maxPrice} />
+                            <Form.Control onChange={(e) => setMaxPrice(e.target.value)} value={maxPrice} />
                             
                         </Form.Group>
 
@@ -90,11 +85,12 @@ export default function Search(){
                             <Form.Label>
                                 <strong>Bedrooms</strong>
                             </Form.Label>
-                            <Form.Select onChange={handleSelectChange} value={numBedroom}>
-                                <option value="">1</option>
-                                <option value="">2</option>
-                                <option value="">3</option>
-                                <option value="">4</option>
+                            <Form.Select onChange={(e) => setNumBed(e.target.value)} value={numBed}>
+                                <option value="Any">Any</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
                             </Form.Select>
                         </Form.Group>
 
@@ -102,11 +98,12 @@ export default function Search(){
                             <Form.Label>
                                 <strong>Bathrooms</strong>
                             </Form.Label>
-                            <Form.Select>
-                                <option value="">1</option>
-                                <option value="">2</option>
-                                <option value="">3</option>
-                                <option value="">4</option>
+                            <Form.Select onChange={(e) => setNumBath(e.target.value)} value={numBath}>
+                                <option value="Any">Any</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
                             </Form.Select>
                         </Form.Group>
 
@@ -114,16 +111,17 @@ export default function Search(){
                             <Form.Label>
                                 <strong>District</strong>
                             </Form.Label>
-                            <Form.Select>
-                                <option value="">1</option>
-                                <option value="">2</option>
-                                <option value="">3</option>
-                                <option value="">4</option>
-                                <option value="">5</option>
-                                <option value="">6</option>
-                                <option value="">7</option>
-                                <option value="">8</option>
-                                <option value="">9</option>
+                            <Form.Select onChange={(e) => setDistrictNum(e.target.value)} value={districtNum}>
+                                <option value="Any">Any</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
                             </Form.Select>
                         </Form.Group>
 
@@ -131,18 +129,23 @@ export default function Search(){
                             <Form.Label>
                                 <strong>Lava Zone</strong>
                             </Form.Label>
-                            <Form.Select>
-                                <option value="">1</option>
-                                <option value="">2</option>
-                                <option value="">3</option>
-                                <option value="">4</option>
-                                <option value="">5</option>
-                                <option value="">6</option>
-                                <option value="">7</option>
-                                <option value="">8</option>
-                                <option value="">9</option>
+                            <Form.Select onChange={(e) => setLavaZone(e.target.value)} value={lavaZone}>
+                                <option value="Any">Any</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
                             </Form.Select>
-                        </Form.Group>                       
+                        </Form.Group>
+
+                        <Button variant='primary' type='submit'>
+                            Search
+                        </Button>                    
                         
                     </Form>
                 </div>

@@ -8,7 +8,8 @@ import {getAllProperties,
         getTaxRecords,
         getNearbySchools,
         getDistrictName,
-        getMinMaxPrice
+        getMinMaxPrice,
+        queryDatabase
         } from './database.js'
 import cors from 'cors'
 import bodyParser from 'body-parser'
@@ -47,12 +48,25 @@ app.get('/api/realtors', async (req, res) => {
 
 app.post('/api/search', async (req, res) => {
     const propertyType = req.body.propertyType
-    const minPrice = req.body.minPrice
-    console.log(minPrice)
-    const maxPrice = req.body.maxPrice
-    console.log(maxPrice)
-    const records = await searchBar(propertyType, minPrice, maxPrice)
+    const records = await searchBar(propertyType)
     res.send(records)
+})
+
+app.post('/api/search/querydatabase', async (req, res) => {
+    const propertyType = req.body.propertyType
+    const minPrice = req.body.minPrice
+    const maxPrice = req.body.maxPrice
+    const numBed = req.body.numBed
+    const numBath = req.body.numBath
+    const districtNum = req.body.districtNum
+    const lavaZone = req.body.lavaZone
+
+    // console.log( propertyType, minPrice, maxPrice, numBed, numBath, districtNum, lavaZone)
+    const records = await queryDatabase(propertyType, minPrice, maxPrice, numBed, numBath, districtNum, lavaZone)
+
+    
+    res.send(records)
+    console.log(records)
 })
 
 app.post('/api/search/sale-records', async (req, res)=> {
